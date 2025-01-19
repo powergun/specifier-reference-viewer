@@ -115,7 +115,10 @@ internal static class SpecifierFinder
 
         if (!string.IsNullOrEmpty(attribute.Extends) && attribute.ValueType is not UhtSpecifierValueType.NotSet)
         {
-            return new KnownSpecifierInfo(specifierName, TableNameToTag[attribute.Extends], attribute.ValueType);
+            if (TableNameToTag.TryGetValue(attribute.Extends, out var tag))
+            {
+                return new KnownSpecifierInfo(specifierName, tag, attribute.ValueType);
+            }
         }
 
         return null;

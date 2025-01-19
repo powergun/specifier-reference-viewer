@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <EngineDir Condition="'$(EngineDir)' == ''">C:\Program Files\Epic Games\UE_5.3\Engine</EngineDir>
+    <EngineDir Condition="'$(EngineDir)' == ''">D:\ue5dev\wn_mturret_main\Engine</EngineDir>
     <GeneratorName>ReferenceGenerator</GeneratorName>
     <RootNamespace>Citrus.Plugins.SpecifierReferenceViewer.ReferenceGenerator</RootNamespace>
   </PropertyGroup>
@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <AssemblyName>$(GeneratorName)</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>Nullable</TreatWarningsAsErrors>
     <Configuration Condition=" '$(Configuration)' == '' ">Development</Configuration>

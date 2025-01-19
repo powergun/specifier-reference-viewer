@@ -1,1 +1,5 @@
 [Oo]bj/
+Binaries/
+Intermediate/
+.idea/
+.code/

@@ -51,7 +51,7 @@ public static class Exporter
             factory.Session.LogInfo("The specifier reference list is being generated.");
 
             var knownSpecifiers = SpecifierFinder.FindAllSpecifiers();
-            var metadataUsages = MetadataUsageFinder.FindAllMetadataUsages(factory.Session.Packages);
+            var metadataUsages = MetadataUsageFinder.FindAllMetadataUsages(factory.Session.Modules);
             var knownMetadata = MetadataFinder.FindAllMetadata(metadataUsages);
 
             ExportMetadataUsagesAsCodeForViewer(factory, metadataUsages);
@@ -66,7 +66,7 @@ public static class Exporter
         }
         catch (Exception ex)
         {
-            factory.Session.LogError(ex.ToString());
+            factory.Session.LogInfo(ex.ToString());
             throw;
         }
     }

@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using EpicGames.UHT.Exporters.CodeGen;
 using EpicGames.UHT.Types;
 using static Citrus.Plugins.SpecifierReferenceViewer.ReferenceGenerator.Tag;
 
@@ -41,13 +43,28 @@ internal static class MetadataUsageFinder
     /// <summary>
     /// Searches for all metadata usages in a set of packages.
     /// </summary>
-    public static IEnumerable<MetadataUsageInfo> FindAllMetadataUsages(IEnumerable<UhtPackage> packages)
+    public static IEnumerable<MetadataUsageInfo> FindAllMetadataUsages(IEnumerable<UhtModule> modules)
     {
-        foreach (UhtPackage package in packages)
+        foreach (UhtModule module in modules)
         {
-            foreach (MetadataUsageInfo metadata in FindAllMetadataUsages(package))
+            Console.Out.WriteLine("module: " + module.Module.Name);
+            foreach (UhtPackage package in module.Packages)
             {
-                yield return metadata;
+                Console.Out.WriteLine("  package: " + package.Package.FullName);
+                foreach (UhtType type in package.Children)
+                {
+                    Console.Out.WriteLine("    type: " + type.FullName);
+                    Console.Out.WriteLine("      Source: " + type.HeaderFile.FilePath + " " + type.LineNumber);
+                    foreach (UhtType child in type.Children)
+                    {
+                        Console.Out.WriteLine("        child: " + child.FullName + " " + child.LineNumber);
+                    }
+                }
+
+                foreach (MetadataUsageInfo metadata in FindAllMetadataUsages(package))
+                {
+                    yield return metadata;
+                }
             }
         }
     }
