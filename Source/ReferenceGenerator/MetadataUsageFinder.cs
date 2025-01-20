@@ -47,6 +47,12 @@ internal static class MetadataUsageFinder
     {
         foreach (UhtModule module in modules)
         {
+            // speed up
+            if (module.ShortName != "DefectCoreRuntime")
+            {
+                continue;
+            }
+
             Console.Out.WriteLine("module: " + module.Module.Name);
             foreach (UhtPackage package in module.Packages)
             {
@@ -55,9 +61,40 @@ internal static class MetadataUsageFinder
                 {
                     Console.Out.WriteLine("    type: " + type.FullName);
                     Console.Out.WriteLine("      Source: " + type.HeaderFile.FilePath + " " + type.LineNumber);
+
+                    // inspect function
                     foreach (UhtType child in type.Children)
                     {
-                        Console.Out.WriteLine("        child: " + child.FullName + " " + child.LineNumber);
+                        if (child is UhtFunction function)
+                        {
+                            Console.Out.WriteLine("        " + function.FullName);
+                            Console.Out.WriteLine("          " + function.HeaderFile + ":" + function.LineNumber);
+                            Console.Out.WriteLine("          " + function.CppImplName);
+                            Console.Out.WriteLine("          " + function.FunctionFlags);
+                            Console.Out.WriteLine("          " + function.FunctionExportFlags);
+                            var parameters = function.ParameterProperties.ToArray() switch
+                            {
+                                [] => "",
+                                var xs => string.Join(", ", xs.Select(x => "(" + x.FullName + ":" + x.LineNumber + ")"))
+                            };
+                            Console.Out.WriteLine("          params: " + parameters);
+                            var ret = function.ReturnProperty switch
+                            {
+                                null => "void",
+                                var property => "(" + property.FullName + ":" + property.LineNumber + ")"
+                            };
+                            Console.Out.WriteLine("          return: " + ret);
+                        }
+                    }
+
+                    // inspect other properties; omit this for now
+                    foreach (var child in type.Children)
+                    {
+                        if (child is UhtProperty property)
+                        {
+
+                            // Console.Out.WriteLine("        child: " + child.FullName + " " + child.LineNumber);
+                        }
                     }
                 }
 
