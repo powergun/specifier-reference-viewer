@@ -45,57 +45,54 @@ internal static class MetadataUsageFinder
     /// </summary>
     public static IEnumerable<MetadataUsageInfo> FindAllMetadataUsages(IEnumerable<UhtModule> modules)
     {
+        Console.Out.WriteLine("----BEGIN----");
         foreach (UhtModule module in modules)
         {
             // speed up
-            if (module.ShortName != "DefectCoreRuntime")
-            {
-                continue;
-            }
+            // if (module.ShortName != "DefectCoreRuntime")
+            // {
+            //     continue;
+            // }
 
-            Console.Out.WriteLine("module: " + module.Module.Name);
+            Console.Out.WriteLine($"-module:{module.Module.Name}");
             foreach (UhtPackage package in module.Packages)
             {
-                Console.Out.WriteLine("  package: " + package.Package.FullName);
-                foreach (UhtType type in package.Children)
+                Console.Out.WriteLine($"--package:{package.Package.FullName}");
+                foreach (var type in package.Children)
                 {
-                    Console.Out.WriteLine("    type: " + type.FullName);
-                    Console.Out.WriteLine("      Source: " + type.HeaderFile.FilePath + " " + type.LineNumber);
+                    Console.Out.WriteLine($"---{type.EngineType}:{type.HeaderFile}:{type.LineNumber}");
+                    // Console.Out.WriteLine("    type: " + type.FullName);
+                    // Console.Out.WriteLine("      Source: " + type.HeaderFile.FilePath + " " + type.LineNumber);
 
                     // inspect function
                     foreach (UhtType child in type.Children)
                     {
-                        if (child is UhtFunction function)
-                        {
-                            Console.Out.WriteLine("        " + function.FullName);
-                            Console.Out.WriteLine("          " + function.HeaderFile + ":" + function.LineNumber);
-                            Console.Out.WriteLine("          " + function.CppImplName);
-                            Console.Out.WriteLine("          " + function.FunctionFlags);
-                            Console.Out.WriteLine("          " + function.FunctionExportFlags);
-                            var parameters = function.ParameterProperties.ToArray() switch
-                            {
-                                [] => "",
-                                var xs => string.Join(", ", xs.Select(x => "(" + x.FullName + ":" + x.LineNumber + ")"))
-                            };
-                            Console.Out.WriteLine("          params: " + parameters);
-                            var ret = function.ReturnProperty switch
-                            {
-                                null => "void",
-                                var property => "(" + property.FullName + ":" + property.LineNumber + ")"
-                            };
-                            Console.Out.WriteLine("          return: " + ret);
-                        }
+                        Console.Out.WriteLine($"----{child.EngineType}:{child.LineNumber}");
+
+                        // if (child is UhtFunction function)
+                        // {
+                        //     var parameters = function.ParameterProperties.ToArray() switch
+                        //     {
+                        //         [] => "",
+                        //         var xs => string.Join(", ", xs.Select(x => "(" + x.FullName + ":" + x.LineNumber + ")"))
+                        //     };
+                        //     var ret = function.ReturnProperty switch
+                        //     {
+                        //         null => "void",
+                        //         var property => "(" + property.FullName + ":" + property.LineNumber + ")"
+                        //     };
+                        // }
                     }
 
                     // inspect other properties; omit this for now
-                    foreach (var child in type.Children)
-                    {
-                        if (child is UhtProperty property)
-                        {
-
-                            // Console.Out.WriteLine("        child: " + child.FullName + " " + child.LineNumber);
-                        }
-                    }
+                    // foreach (var child in type.Children)
+                    // {
+                    //     if (child is UhtProperty property)
+                    //     {
+                    //
+                    //         Console.Out.WriteLine($"p:{child.LineNumber}");
+                    //     }
+                    // }
                 }
 
                 foreach (MetadataUsageInfo metadata in FindAllMetadataUsages(package))
@@ -104,6 +101,7 @@ internal static class MetadataUsageFinder
                 }
             }
         }
+        Console.Out.WriteLine("----END----");
     }
 
     /// <summary>
